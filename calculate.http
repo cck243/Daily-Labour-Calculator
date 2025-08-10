@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M/s Chakadola Mushroom - Daily Labour Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B4513 0%, #D2B48C 25%, #DEB887 50%, #F5DEB3 75%, #FAEBD7 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #F5F5DC, #FFF8DC);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(139, 69, 19, 0.3);
+            overflow: hidden;
+            border: 3px solid #CD853F;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            color: #FFF8DC;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: "🍄";
+            position: absolute;
+            font-size: 3em;
+            top: 10px;
+            left: 30px;
+            opacity: 0.3;
+        }
+        
+        .header::after {
+            content: "🍄";
+            position: absolute;
+            font-size: 3em;
+            top: 10px;
+            right: 30px;
+            opacity: 0.3;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .company-name {
+            font-size: 1.8em;
+            color: #DEB887;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+            background: #FFF8DC;
+        }
+        
+        .worker-section {
+            background: linear-gradient(145deg, #F5DEB3, #FAEBD7);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #DEB887;
+            box-shadow: 0 8px 16px rgba(139, 69, 19, 0.2);
+        }
+        
+        .worker-title {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #8B4513;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .worker-title .icon {
+            margin-right: 15px;
+            font-size: 1.4em;
+        }
+        
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-field label {
+            font-weight: 600;
+            color: #8B4513;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+        
+        .input-field input {
+            padding: 12px 15px;
+            border: 2px solid #DEB887;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: #FFFAF0;
+        }
+        
+        .input-field input:focus {
+            outline: none;
+            border-color: #8B4513;
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.2);
+            background: #FFF;
+        }
+        
+        .rate-display {
+            background: linear-gradient(145deg, #DEB887, #F5DEB3);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 2px solid #CD853F;
+        }
+        
+        .rate-display strong {
+            color: #8B4513;
+            font-size: 1.2em;
+        }
+        
+        .mushroom-btn {
+            background: linear-gradient(145deg, #8B4513, #A0522D);
+            color: #FFF8DC;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+            box-shadow: 0 6px 12px rgba(139, 69, 19, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mushroom-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(139, 69, 19, 0.4);
+            background: linear-gradient(145deg, #A0522D, #CD853F);
+        }
+        
+        .mushroom-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .mushroom-btn::before {
+            content: "🍄";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+        }
+        
+        .result {
+            background: linear-gradient(145deg, #FAEBD7, #F5F5DC);
+            border: 3px solid #DEB887;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: inset 0 2px 4px rgba(139, 69, 19, 0.1);
+        }
+        
+        .result h3 {
+            color: #8B4513;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #DEB887;
+            font-weight: 500;
+        }
+        
+        .result-item:last-child {
+            border-top: 3px solid #8B4513;
+            border-bottom: none;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-weight: 700;
+            font-size: 1.2em;
+            color: #8B4513;
+        }
+        
+        .deduction-section {
+            background: linear-gradient(145deg, #F0E68C, #F5DEB3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid #DAA520;
+            box-shadow: 0 8px 16px rgba(218, 165, 32, 0.2);
+        }
+        
+        .deduction-title {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #B8860B;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .total-section {
+            background: linear-gradient(145deg, #CD853F, #D2B48C);
+            border-radius: 20px;
+            padding: 35px;
+            margin-top: 40px;
+            text-align: center;
+            border: 3px solid #8B4513;
+            box-shadow: 0 15px 30px rgba(139, 69, 19, 0.3);
+        }
+        
+        .total-section h2 {
+            color: #8B4513;
+            margin-bottom: 20px;
+            font-size: 2em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .total-amount {
+            font-size: 2.8em;
+            font-weight: bold;
+            color: #8B4513;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 15px;
+        }
+        
+        .final-amount {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #654321;
+            background: #FFF8DC;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #8B4513;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .mushroom-decoration {
+            text-align: center;
+            font-size: 2em;
+            margin: 20px 0;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="company-name">M/s Chakadola Mushroom</div>
+            <h1>Daily Labour Calculator</h1>
+            <p>Professional Mushroom Cultivation - Worker Wage Management System</p>
+        </div>
+        
+        <div class="content">
+            <!-- Men Workers Section -->
+            <div class="worker-section">
+                <div class="worker-title">
+                    <span class="icon">👨‍🌾</span>
+                    Men Workers
+                </div>
+                
+                <div class="rate-display">
+                    <strong>Regular Rate: ₹330 per day (8 hours) | Overtime Rate: ₹41.25/hour</strong>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="menCount">Number of Men</label>
+                        <input type="number" id="menCount" min="0" value="1">
+                    </div>
+                    <div class="input-field">
+                        <label for="menRegularDays">Regular Days (1 day = 8 hrs)</label>
+                        <input type="number" id="menRegularDays" min="0" step="0.5" value="1" placeholder="Enter days (e.g., 1, 0.5, 1.5)">
+                    </div>
+                    <div class="input-field">
+                        <label for="menOvertimeHours">Overtime Hours</label>
+                        <input type="number" id="menOvertimeHours" min="0" step="0.5" value="0">
+                    </div>
+                </div>
+                
+                <button class="mushroom-btn" onclick="calculateMenWages()">Calculate Men's Wages</button>
+                
+                <div id="menResult" class="result hidden">
+                    <h3>🍄 Men's Wage Calculation 🍄</h3>
+                    <div class="result-item">
+                        <span>Regular Days Payment:</span>
+                        <span id="menRegularAmount">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Overtime Hours:</span>
+                        <span id="menOvertimeHoursDisplay">0 hrs</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Overtime Payment (₹41.25/hr):</span>
+                        <span id="menOvertimeAmount">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Amount:</span>
+                        <span id="menTotalAmount">₹0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Women Workers Section -->
+            <div class="worker-section">
+                <div class="worker-title">
+                    <span class="icon">👩‍🌾</span>
+                    Women Workers
+                </div>
+                
+                <div class="rate-display">
+                    <strong>Regular Rate: ₹280 per day (8 hours) | Overtime Rate: ₹35/hour</strong>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="womenCount">Number of Women</label>
+                        <input type="number" id="womenCount" min="0" value="1">
+                    </div>
+                    <div class="input-field">
+                        <label for="womenRegularDays">Regular Days (1 day = 8 hrs)</label>
+                        <input type="number" id="womenRegularDays" min="0" step="0.5" value="1" placeholder="Enter days (e.g., 1, 0.5, 1.5)">
+                    </div>
+                    <div class="input-field">
+                        <label for="womenOvertimeHours">Overtime Hours</label>
+                        <input type="number" id="womenOvertimeHours" min="0" step="0.5" value="0">
+                    </div>
+                </div>
+                
+                <button class="mushroom-btn" onclick="calculateWomenWages()">Calculate Women's Wages</button>
+                
+                <div id="womenResult" class="result hidden">
+                    <h3>🍄 Women's Wage Calculation 🍄</h3>
+                    <div class="result-item">
+                        <span>Regular Days Payment:</span>
+                        <span id="womenRegularAmount">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Overtime Hours:</span>
+                        <span id="womenOvertimeHoursDisplay">0 hrs</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Overtime Payment (₹35/hr):</span>
+                        <span id="womenOvertimeAmount">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Amount:</span>
+                        <span id="womenTotalAmount">₹0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mushroom-decoration">🍄 🍄 🍄 🍄 🍄</div>
+            
+            <!-- Deduction Section -->
+            <div class="deduction-section">
+                <div class="deduction-title">💰 Advance Payment Deduction 💰</div>
+                
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="menAdvance">Men's Advance Payment</label>
+                        <input type="number" id="menAdvance" min="0" step="0.01" value="0">
+                    </div>
+                    <div class="input-field">
+                        <label for="womenAdvance">Women's Advance Payment</label>
+                        <input type="number" id="womenAdvance" min="0" step="0.01" value="0">
+                    </div>
+                </div>
+                
+                <button class="mushroom-btn" onclick="calculateFinalAmount()">Apply Deductions & Calculate Final Amount</button>
+                
+                <div id="deductionResult" class="result hidden">
+                    <h3>💸 Deduction Summary 💸</h3>
+                    <div class="result-item">
+                        <span>Men's Advance Deduction:</span>
+                        <span id="menAdvanceDeduction">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Women's Advance Deduction:</span>
+                        <span id="womenAdvanceDeduction">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Advance Deduction:</span>
+                        <span id="totalAdvanceDeduction">₹0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Total Section -->
+            <div class="total-section">
+                <h2>🍄 Grand Total Summary 🍄</h2>
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 1.4em; color: #8B4513; margin-bottom: 10px;">
+                        Gross Total Wages: <span class="total-amount" id="grossTotal">₹0</span>
+                    </div>
+                    <div style="font-size: 1.2em; color: #B8860B; margin-bottom: 15px;">
+                        Less: Advance Deduction: <span id="totalDeduction">₹0</span>
+                    </div>
+                </div>
+                <div style="font-size: 1.6em; color: #8B4513; font-weight: bold;">
+                    Net Payable Amount:
+                </div>
+                <div class="final-amount" id="finalAmount">₹0</div>
+                
+                <button class="mushroom-btn" onclick="calculateAllTotals()" style="margin-top: 25px;">
+                    🍄 Calculate Complete Summary 🍄
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Wage rates
+        const MEN_RATE_PER_8_HOURS = 330;
+        const WOMEN_RATE_PER_8_HOURS = 280;
+        const MEN_HOURLY_RATE = 41.25;
+        const WOMEN_HOURLY_RATE = 35.00;
+        const MEN_OVERTIME_RATE = 41.25;
+        const WOMEN_OVERTIME_RATE = 35.00;
+
+        let menTotalWages = 0;
+        let womenTotalWages = 0;
+
+        function calculateMenWages() {
+            const count = parseInt(document.getElementById('menCount').value) || 0;
+            const regularDays = parseFloat(document.getElementById('menRegularDays').value) || 0;
+            const overtimeHours = parseFloat(document.getElementById('menOvertimeHours').value) || 0;
+            
+            // Calculate regular payment based on days (1 day = ₹330)
+            const regularAmount = regularDays * MEN_RATE_PER_8_HOURS * count;
+            const overtimeAmount = overtimeHours * MEN_OVERTIME_RATE * count;
+            const totalAmount = regularAmount + overtimeAmount;
+            
+            menTotalWages = totalAmount;
+            
+            // Update display
+            document.getElementById('menRegularAmount').textContent = `₹${regularAmount.toFixed(2)}`;
+            document.getElementById('menOvertimeHoursDisplay').textContent = `${overtimeHours} hrs`;
+            document.getElementById('menOvertimeAmount').textContent = `₹${overtimeAmount.toFixed(2)}`;
+            document.getElementById('menTotalAmount').textContent = `₹${totalAmount.toFixed(2)}`;
+            
+            document.getElementById('menResult').classList.remove('hidden');
+            updateGrossTotal();
+        }
+
+        function calculateWomenWages() {
+            const count = parseInt(document.getElementById('womenCount').value) || 0;
+            const regularDays = parseFloat(document.getElementById('womenRegularDays').value) || 0;
+            const overtimeHours = parseFloat(document.getElementById('womenOvertimeHours').value) || 0;
+            
+            // Calculate regular payment based on days (1 day = ₹280)
+            const regularAmount = regularDays * WOMEN_RATE_PER_8_HOURS * count;
+            const overtimeAmount = overtimeHours * WOMEN_OVERTIME_RATE * count;
+            const totalAmount = regularAmount + overtimeAmount;
+            
+            womenTotalWages = totalAmount;
+            
+            // Update display
+            document.getElementById('womenRegularAmount').textContent = `₹${regularAmount.toFixed(2)}`;
+            document.getElementById('womenOvertimeHoursDisplay').textContent = `${overtimeHours} hrs`;
+            document.getElementById('womenOvertimeAmount').textContent = `₹${overtimeAmount.toFixed(2)}`;
+            document.getElementById('womenTotalAmount').textContent = `₹${totalAmount.toFixed(2)}`;
+            
+            document.getElementById('womenResult').classList.remove('hidden');
+            updateGrossTotal();
+        }
+
+        function calculateFinalAmount() {
+            const menAdvance = parseFloat(document.getElementById('menAdvance').value) || 0;
+            const womenAdvance = parseFloat(document.getElementById('womenAdvance').value) || 0;
+            const totalAdvance = menAdvance + womenAdvance;
+            
+            // Update deduction display
+            document.getElementById('menAdvanceDeduction').textContent = `₹${menAdvance.toFixed(2)}`;
+            document.getElementById('womenAdvanceDeduction').textContent = `₹${womenAdvance.toFixed(2)}`;
+            document.getElementById('totalAdvanceDeduction').textContent = `₹${totalAdvance.toFixed(2)}`;
+            
+            document.getElementById('deductionResult').classList.remove('hidden');
+            
+            // Calculate final amount
+            const grossTotal = menTotalWages + womenTotalWages;
+            const finalAmount = grossTotal - totalAdvance;
+            
+            document.getElementById('totalDeduction').textContent = `₹${totalAdvance.toFixed(2)}`;
+            document.getElementById('finalAmount').textContent = `₹${finalAmount.toFixed(2)}`;
+        }
+
+        function calculateAllTotals() {
+            calculateMenWages();
+            calculateWomenWages();
+            calculateFinalAmount();
+        }
+
+        function updateGrossTotal() {
+            const grossTotal = menTotalWages + womenTotalWages;
+            document.getElementById('grossTotal').textContent = `₹${grossTotal.toFixed(2)}`;
+        }
+
+        // Auto-calculate when inputs change
+        document.getElementById('menCount').addEventListener('input', calculateMenWages);
+        document.getElementById('menRegularDays').addEventListener('input', calculateMenWages);
+        document.getElementById('menOvertimeHours').addEventListener('input', calculateMenWages);
+        document.getElementById('womenCount').addEventListener('input', calculateWomenWages);
+        document.getElementById('womenRegularDays').addEventListener('input', calculateWomenWages);
+        document.getElementById('womenOvertimeHours').addEventListener('input', calculateWomenWages);
+        document.getElementById('menAdvance').addEventListener('input', calculateFinalAmount);
+        document.getElementById('womenAdvance').addEventListener('input', calculateFinalAmount);
+    </script>
+</body>
+</html>
